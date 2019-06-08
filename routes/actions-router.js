@@ -1,5 +1,5 @@
 const express = require('express');
-const Action = require('../data/actions-model.js');
+const Action = require('../data/models/actions-model.js');
 
 const actionsRouter = express.Router();
 
@@ -9,8 +9,8 @@ actionsRouter.use(express.json());
 /* ROUTES */
 actionsRouter.get('/', async (req, res) => {
   try {
-    const actions = await Action.get();
-    res.status(200).json(actions);
+    const allActions = await Action.get();
+    res.status(200).json(allActions);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: `An error occurred: ${err}` });
@@ -20,7 +20,7 @@ actionsRouter.get('/', async (req, res) => {
 actionsRouter.get('/:id', async (req, res) => {
   try {
     const action = await Action.get(req.params.id);
-    if (project) {
+    if (action) {
       res.status(200).json(action);
     } else {
       res.status(400).json({ message: `Invalid action ID. Please provide a valid action ID.` });
@@ -32,13 +32,13 @@ actionsRouter.get('/:id', async (req, res) => {
 });
 
 actionsRouter.post('/', async (req, res) => {
-  const { name, notes, project_id } = req.body
+  const { project_id, notes, description } = req.body
   try {
     const newAction = await Action.insert(req.body);
-    if (!name && !notes && !project_id) {
-      res.status(400).json({ message: `Please provide an action name, notes, and a corresponding project ID.` });
-    } else {
+    if (project_id && notes && description) {
       res.status(200).json(newAction);
+    } else {
+      res.status(400).json({ message: `Could not add the action.` });
     };
   } catch (err) {
     console.log(err);
@@ -48,12 +48,12 @@ actionsRouter.post('/', async (req, res) => {
 
 actionsRouter.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, description, completed } = req.body;
+  const { project_id, notes, description } = req.body;
   try {
     const action = await Action.get(id);
     if (action) {
-      await action.update(id, { name, description, completed });
-      res.status(200).json(project);
+      await Action.update(id, { project_id, notes, description });
+      res.status(200).json(action);
     } else {
       res.status(400).json({ message: `Invalid action ID. Please provide a valid action ID.` });
     };
@@ -67,7 +67,7 @@ actionsRouter.delete('/:id', async (req, res) => {
   try {
     const action = await Action.remove(req.params.id);
     if (action) {
-      res.status(200).json(project);
+      res.status(200).json(action);
     } else {
       res.status(400).json({ message: `Invalid action ID. Please provide a valid action ID.` });
     };

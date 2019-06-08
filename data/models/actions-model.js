@@ -1,6 +1,4 @@
-const knex = require('knex');
-const knexConfig = require('../knexfile');
-const db = knex(knexConfig.development);
+const db = require('../dbConfig.js');
 const mappers = require('./mappers');
 
 module.exports = {

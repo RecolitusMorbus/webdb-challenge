@@ -1,5 +1,5 @@
 const express = require('express');
-const Project = require('../data/projects-model.js');
+const Project = require('../data/models/projects-model.js');
 
 const projectRouter = express.Router();
 
@@ -9,8 +9,8 @@ projectRouter.use(express.json());
 /* ROUTES */
 projectRouter.get('/', async (req, res) => {
   try {
-    projects = await Project.getProjects();
-    res.status(200).json(projects);
+    const allProjects = await Project.get();
+    res.status(200).json(allProjects);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: `An error occurred: ${err}` });
@@ -19,7 +19,7 @@ projectRouter.get('/', async (req, res) => {
 
 projectRouter.get('/:id', async (req, res) => {
   try {
-    const project = await Project.getProject(req.params.id);
+    const project = await Project.get(req.params.id);
     if (project) {
       res.status(200).json(project);
     } else {

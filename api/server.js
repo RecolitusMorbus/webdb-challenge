@@ -8,7 +8,7 @@ server.use(express.json());
 
 /* ROUTER */
 server.use('/projects', projectsRouter);
-// server.use('/actions', actionsRouter);
+server.use('/actions', actionsRouter);
 
 /* SANITY CHECK */
 server.get('/', (req, res) => {
